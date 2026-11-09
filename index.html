@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>أذكار الصباح</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#cfe4e8;--card:#fff6dc;--done:#dbeee2;--ink:#173a45;--sub:#4d6f7a;--accent:#1f7a8c;--bar:#b6d3da;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f232b;--card:#1d3640;--done:#17372c;--ink:#e6f1f3;--sub:#9bbcc5;--accent:#5cc2d4;--bar:#27444f}}
+:root[data-theme="dark"]{--bg:#0f232b;--card:#1d3640;--done:#17372c;--ink:#e6f1f3;--sub:#9bbcc5;--accent:#5cc2d4;--bar:#27444f}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Cairo",system-ui,sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:14px 16px 10px;z-index:5}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+h1{font-family:"Amiri",serif;font-size:2rem;margin:0;font-weight:700}
+.btns button{font:inherit;font-size:.85rem;background:var(--card);color:var(--ink);border:0;border-radius:10px;padding:6px 12px;margin-inline-start:6px}
+.prog{height:8px;background:var(--bar);border-radius:8px;margin-top:10px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+#stat{font-size:.85rem;color:var(--sub);margin-top:6px}
+main{max-width:640px;margin:0 auto;padding:6px 14px 40px;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--card);border-radius:22px;padding:16px 16px 12px;cursor:pointer;user-select:none;transition:background .2s,transform .08s}
+.card:active{transform:scale(.985)}
+.card.done{background:var(--done);opacity:.75}
+.t{font-weight:700;font-size:.9rem;color:var(--accent);margin:0 0 6px}
+.x{font-family:"Amiri",serif;font-size:1.35rem;line-height:2;margin:0}
+.row{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.cnt{font-size:1.6rem;font-weight:700;min-width:64px;text-align:center;background:var(--bg);border-radius:14px;padding:2px 12px}
+.card.done .cnt{background:transparent;color:var(--accent)}
+.of{font-size:.8rem;color:var(--sub)}
+.undo{font:inherit;font-size:.8rem;background:none;border:0;color:var(--sub);padding:8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="top"><h1>أذكار الصباح</h1>
+    <div class="btns"><button id="theme">🌓</button><button id="reset">ابدأ من جديد</button></div></div>
+  <div class="prog"><i id="bar"></i></div>
+  <div id="stat"></div>
+</header>
+<main id="list"></main>
+<script>
+const D=[
+["آية الكرسي",1,"اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ"],
+["الإخلاص",3,"قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ"],
+["الفلق",3,"قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِن شَرِّ مَا خَلَقَ ۝ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ"],
+["الناس",3,"قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَٰهِ النَّاسِ ۝ مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ"],
+["أصبحنا وأصبح الملك لله",1,"أصبحنا وأصبح الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير، ربِّ أسألك خير ما في هذا اليوم وخير ما بعده، وأعوذ بك من شر ما في هذا اليوم وشر ما بعده، ربِّ أعوذ بك من الكسل وسوء الكبر، ربِّ أعوذ بك من عذاب في النار وعذاب في القبر"],
+["اللهم بك أصبحنا",1,"اللهم بك أصبحنا وبك أمسينا وبك نحيا وبك نموت وإليك النشور"],
+["سيد الاستغفار",1,"اللهم أنت ربي لا إله إلا أنت، خلقتني وأنا عبدك وأنا على عهدك ووعدك ما استطعت، أعوذ بك من شر ما صنعت، أبوء لك بنعمتك علي وأبوء بذنبي فاغفر لي، فإنه لا يغفر الذنوب إلا أنت"],
+["اللهم إني أصبحت أشهدك",4,"اللهم إني أصبحت أشهدك، وأشهد حملة عرشك، وملائكتك وجميع خلقك، أنك أنت الله لا إله إلا أنت وحدك لا شريك لك، وأن محمدًا عبدك ورسولك"],
+["اللهم عافني في بدني",3,"اللهم عافني في بدني، اللهم عافني في سمعي، اللهم عافني في بصري، لا إله إلا أنت. اللهم إني أعوذ بك من الكفر والفقر، اللهم إني أعوذ بك من عذاب القبر، لا إله إلا أنت"],
+["رضيت بالله ربًا",3,"رضيت بالله ربًّا وبالإسلام دينًا وبمحمد صلى الله عليه وسلم نبيًّا"],
+["حسبي الله",7,"حسبي الله لا إله إلا هو عليه توكلت وهو رب العرش العظيم"],
+["بسم الله الذي لا يضر",3,"بسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء وهو السميع العليم"],
+["اللهم إني أسألك العافية",1,"اللهم إني أسألك العافية في الدنيا والآخرة، اللهم إني أسألك العفو والعافية في ديني ودنياي وأهلي ومالي، اللهم استر عوراتي وآمن روعاتي، اللهم احفظني من بين يدي ومن خلفي وعن يميني وعن شمالي ومن فوقي، وأعوذ بعظمتك أن أغتال من تحتي"],
+["أعوذ بكلمات الله التامات",3,"أعوذ بكلمات الله التامات من شر ما خلق"],
+["الصلاة على النبي",10,"اللهم صلِّ وسلم على نبينا محمد"],
+["لا إله إلا الله وحده",100,"لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير"],
+["الاستغفار",100,"أستغفر الله وأتوب إليه"]
+];
+const today=new Date().toISOString().slice(0,10),KEY="adhkar-"+today;
+let left=D.map(d=>d[1]);
+try{const s=JSON.parse(localStorage.getItem(KEY));if(Array.isArray(s)&&s.length===D.length)left=s}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(left))}catch(e){}}
+const list=document.getElementById("list");
+D.forEach((d,i)=>{
+  const c=document.createElement("div");c.className="card";c.id="c"+i;
+  c.innerHTML='<p class="t">'+d[0]+'</p><p class="x">'+d[2]+'</p><div class="row"><button class="undo">إعادة</button><span class="of">المطلوب: '+d[1]+'</span><span class="cnt"></span></div>';
+  c.onclick=()=>{if(left[i]>0){left[i]--;try{navigator.vibrate&&navigator.vibrate(left[i]?12:40)}catch(e){}save();render()}};
+  c.querySelector(".undo").onclick=e=>{e.stopPropagation();left[i]=D[i][1];save();render()};
+  list.appendChild(c);
+});
+function render(){
+  let tot=0,rem=0,n=0;
+  D.forEach((d,i)=>{
+    const c=document.getElementById("c"+i);
+    c.classList.toggle("done",left[i]===0);
+    c.querySelector(".cnt").textContent=left[i]===0?"✓":left[i];
+    tot+=d[1];rem+=left[i];if(left[i]===0)n++;
+  });
+  document.getElementById("bar").style.width=((tot-rem)/tot*100)+"%";
+  document.getElementById("stat").textContent=rem===0?"أتممت أذكار اليوم، تقبل الله منك":"أنهيت "+n+" من "+D.length+" ذكرًا";
+}
+document.getElementById("reset").onclick=()=>{if(confirm("تبدأ من جديد؟")){left=D.map(d=>d[1]);save();render()}};
+document.getElementById("theme").onclick=()=>{
+  const r=document.documentElement,dark=getComputedStyle(r).getPropertyValue("--bg").trim()==="#0f232b";
+  r.setAttribute("data-theme",dark?"light":"dark");
+};
+render();
+</script>
+</body>
+</html>
